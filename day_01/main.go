@@ -6,9 +6,12 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"log"
 	"os"
 )
+
+const DefaultFilename = "input.txt"
 
 func main() {
 	log.Print("AoC 2021 - Day 1")
@@ -16,31 +19,41 @@ func main() {
 	file := get_input_file()
 	defer file.Close()
 
+	previous := nil
+	increases := 0
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		log.Print(scanner.Text())
 	}
 
-	if error := scanner.Err(); error != nil {
-		log.Fatal(error)
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
 	}
 }
 
 func get_input_file() *os.File {
 	filepath := get_input_filepath()
 
-	file, error := os.Open(filepath)
-	if error != nil {
-		log.Fatal(error)
+	if _, err := os.Stat(filepath); errors.Is(err, os.ErrNotExist) {
+		log.Fatal("ERROR: '" + filepath + "' does not exist. Create default "+DefaultFilename+" or pass other input filepath as first argument to script")
+	}
+
+	file, err := os.Open(filepath)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	log.Print("File opened successfully")
 	return file
 }
 
+/**
+ * Get path from arguments or fall back to DefaultFilename
+ */
 func get_input_filepath() string {
 	if len(os.Args) < 2 {
-		log.Fatal("ERROR: Pass input filepath as first argument to script")
+		return DefaultFilename
 	}
 	return os.Args[1]
 }
