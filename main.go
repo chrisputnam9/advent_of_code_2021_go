@@ -8,14 +8,24 @@ import (
 	"bufio"
 	"errors"
 	"log"
-	"strconv"
 	"os"
+	"strconv"
 )
 
 const defaultFilename = "input.txt"
 
+// Default day to run
+var day = "day01"
+
 func main() {
-	log.Print("AoC 2021 - Day 1")
+	day = get_day()
+	log.Print("AoC 2021 - " + day)
+
+	switch day {
+		//case "day01": day01()
+		//case "day01_part2": day01_part2()
+		default: log.Fatal(day + " is not yet implemented")
+	}
 
 	file := get_input_file()
 	defer file.Close()
@@ -66,11 +76,21 @@ func get_input_file() *os.File {
 }
 
 /**
+ * Get the day from arguments if specified
+ */
+func get_day() string {
+	if len(os.Args) > 1 {
+		day = os.Args[1]
+	}
+	return day
+}
+
+/**
  * Get path from arguments or fall back to defaultFilename
  */
 func get_input_filepath() string {
-	if len(os.Args) < 2 {
+	if len(os.Args) < 3 {
 		return defaultFilename
 	}
-	return os.Args[1]
+	return os.Args[2]
 }
