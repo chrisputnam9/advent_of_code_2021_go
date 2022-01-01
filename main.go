@@ -16,7 +16,7 @@ import (
 const defaultFilename = "input.txt"
 
 // Default day to run
-var day = "day_01"
+var day = "day_02"
 
 func main() {
 	day = get_day()
@@ -25,9 +25,23 @@ func main() {
 	switch day {
 		case "day_01": day_01()
 		case "day_01_part2": day_01(3)
+		case "day_02": day_02()
 		default: log.Fatal(day + " is not yet implemented")
 	}
 
+}
+
+/**
+ * Day 2
+ */
+func day_02() {
+	log.Print("Not yet implemented")
+
+	// Regex - match (forward|down|up) \d+
+
+	// Update depth or horizontal_position accordingly
+
+	// Output information and multiplied value
 }
 
 /**
@@ -35,11 +49,11 @@ func main() {
  */
 func day_01(window_length_specified ...int) {
 
-	//window_length := 1
+	window_length := 1
 
-	//if len(window_length_specified) > 0 {
-		//window_length = window_length_specified[0]
-	//}
+	if len(window_length_specified) > 0 {
+		window_length = window_length_specified[0]
+	}
 
 	file := get_input_file()
 	defer file.Close()
@@ -63,10 +77,35 @@ func day_01(window_length_specified ...int) {
 		number_list = append(number_list, number)
 	}
 
-	log.Print(number_list)
+	// Now we loop through the number list
+	// - Each number is the start of a new window
+	// - Compare with the next window
+	// - Stop when we don't have enough to compare
+	//   (X from the end - eg. index = length - X
+	//    where X is window_length
 
-	//var previous_window [3]float64
-	//var next_window [3]float64
+	number_list_length := len(number_list)
+	last_index := number_list_length - window_length
+
+	var sum1 float64
+	var sum2 float64
+
+	for i := 0; i < last_index; i++ {
+		sum1 = 0
+		sum2 = 0
+		for s1 := 0; s1 < window_length; s1++ {
+			sum1 += number_list[i+s1]
+		}
+		for s2 := 0; s2 < window_length; s2++ {
+			sum2 += number_list[i+s2+1]
+		}
+
+		log.Printf("Sums: %f, %f", sum1, sum2)
+
+		if sum2 > sum1 {
+			increases++
+		}
+	}
 
 	log.Printf("Increases: %d", increases)
 }
