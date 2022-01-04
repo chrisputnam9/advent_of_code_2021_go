@@ -17,7 +17,7 @@ import (
 const defaultFilename = "input.txt"
 
 // Default day to run
-var day = "day_02"
+var day = "day_02_part2"
 
 func main() {
 	day = get_day()
@@ -27,6 +27,7 @@ func main() {
 		case "day_01": day_01()
 		case "day_01_part2": day_01(3)
 		case "day_02": day_02()
+		case "day_02_part2": day_02(true)
 		default: log.Fatal(day + " is not yet implemented.  Specify a day argument such as 'day_02' or 'day_01_part2'")
 	}
 
@@ -35,10 +36,15 @@ func main() {
 /**
  * Day 2
  */
-func day_02() {
+func day_02(use_aim_specified ...bool) {
+
+	use_aim := false
+	if len(use_aim_specified) > 0 {
+		use_aim = use_aim_specified[0]
+	}
 
 	// Regex to match navigation commands
-	regex, err := regexp.Compile(`^\s*(forward|down|up)\s*(\d+)\s*$`)
+	regex, err := regexp.Compile(`(?i)^\s*(forward|down|up)\s*(\d+)\s*$`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,6 +57,7 @@ func day_02() {
 		log.Fatal(err)
 	}
 
+	aim := 0
 	depth := 0
 	horizontal_position := 0
 
@@ -64,11 +71,36 @@ func day_02() {
 		// Update depth or horizontal_position accordingly
 		matches := regex.FindStringSubmatch(command)
 		if len(matches) == 3 {
-			log.Print(matches)
-			break
+
+			amount, err := strconv.Atoi(matches[2])
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			switch matches[1] {
+				case "forward":
+					horizontal_position+= amount
+					if use_aim {
+						depth+= (amount * aim)
+					}
+				case "down":
+					if use_aim {
+						aim+= amount
+					} else {
+						depth+= amount
+					}
+				case "up":
+					if use_aim {
+						aim-= amount
+					} else {
+						depth-= amount
+					}
+			}
 		} else {
 			log.Fatal("Invalid command: " + command)
 		}
+
+		log.Printf("Command: %s, A: %d, H:%d, D:%d", command, aim, horizontal_position, depth)
 	}
 
 	// Output information and multiplied value
