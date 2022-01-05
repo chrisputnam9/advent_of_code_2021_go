@@ -28,9 +28,44 @@ func main() {
 		case "day_01_part2": day_01(3)
 		case "day_02": day_02()
 		case "day_02_part2": day_02(true)
+		case "day_03": day_03()
 		default: log.Fatal(day + " is not yet implemented.  Specify a day argument such as 'day_02' or 'day_01_part2'")
 	}
 
+}
+
+/**
+ * Day 3
+ */
+func day_03() {
+
+	file := get_input_file()
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	gamma := ""
+	epsilon := ""
+
+	// https://go.dev/tour/moretypes/13
+	ones := make([]int, 0)
+	zeros := make([]int, 0)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// https://golangcookbook.com/chapters/strings/processing/
+		log.Print(line);
+	}
+
+	log.Printf("Gamma Binary: %s", gamma)
+	log.Printf("Epsilon Binary: %s", epsilon)
 }
 
 /**
@@ -61,7 +96,7 @@ func day_02(use_aim_specified ...bool) {
 	depth := 0
 	horizontal_position := 0
 
-	// Read lines into an array of floats
+	// Read lines and parse commands
 	for scanner.Scan() {
 		command := scanner.Text()
 		if err != nil {
