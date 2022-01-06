@@ -17,7 +17,7 @@ import (
 const defaultFilename = "input.txt"
 
 // Default day to run
-var day = "day_02_part2"
+var day = "day_03"
 
 func main() {
 	day = get_day()
@@ -51,19 +51,49 @@ func day_03() {
 	epsilon := ""
 
 	// https://go.dev/tour/moretypes/13
-	ones := make([]int, 0)
 	zeros := make([]int, 0)
+	ones := make([]int, 0)
 
+	// Loop over input, counting 0s and 1s in each position
 	for scanner.Scan() {
 		line := scanner.Text()
-		if err != nil {
-			log.Fatal(err)
+
+		for i, char := range line {
+
+			// Expand our slices if needed
+			if ( len(ones) < (i + 1) ) {
+				zeros = append(zeros, 0)
+				ones = append(ones, 0)
+			}
+
+			switch char {
+				case '0': zeros[i]++
+				case '1': ones[i]++
+			}
 		}
 
 		// https://golangcookbook.com/chapters/strings/processing/
-		log.Print(line);
+		log.Printf("Line: %s, Zeroes: %v, Ones: %v", line, zeros, ones);
 	}
 
+	// Now Build Gamma and Epsilon by getting most and least common bit in each position
+	for i := 0; i < len(zeros); i++ {
+		count_zeros := zeros[i]
+		count_ones := ones[i]
+
+		if ( count_zeros > count_ones ) {
+			gamma += "0" // Most common bit
+			epsilon += "1" // Least common bit
+		} else if ( count_ones > count_zeros ) {
+			gamma += "1" // Most common bit
+			epsilon += "0" // Least common bit
+		} else {
+			log.Fatalf("There are the same number of ones as there are zeros at position %d - this scenario is not accounted for in the specs", i)
+		}
+	}
+
+	// Output information and multiplied value
+	log.Print("-----------------------------------")
 	log.Printf("Gamma Binary: %s", gamma)
 	log.Printf("Epsilon Binary: %s", epsilon)
 }
@@ -99,9 +129,6 @@ func day_02(use_aim_specified ...bool) {
 	// Read lines and parse commands
 	for scanner.Scan() {
 		command := scanner.Text()
-		if err != nil {
-			log.Fatal(err)
-		}
 
 		// Update depth or horizontal_position accordingly
 		matches := regex.FindStringSubmatch(command)
