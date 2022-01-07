@@ -28,7 +28,8 @@ func main() {
 		case "day_01_part2": day_01(3)
 		case "day_02": day_02()
 		case "day_02_part2": day_02(true)
-		case "day_03": day_03()
+		case "day_03": day_03("power_consumption")
+		case "day_03_part2": day_03("life_support")
 		default: log.Fatal(day + " is not yet implemented.  Specify a day argument such as 'day_02' or 'day_01_part2'")
 	}
 
@@ -37,7 +38,7 @@ func main() {
 /**
  * Day 3
  */
-func day_03() {
+func day_03(calculation string) {
 
 	file := get_input_file()
 	defer file.Close()
@@ -47,16 +48,16 @@ func day_03() {
 		log.Fatal(err)
 	}
 
-	gamma := ""
-	epsilon := ""
-
-	// https://go.dev/tour/moretypes/13
+	number_list := make([][]int, 0)
 	zeros := make([]int, 0)
 	ones := make([]int, 0)
 
 	// Loop over input, counting 0s and 1s in each position
+	//  - and adding lines to a slice for future reference
 	for scanner.Scan() {
 		line := scanner.Text()
+
+		digits := make([]int, 0)
 
 		for i, char := range line {
 
@@ -67,14 +68,32 @@ func day_03() {
 			}
 
 			switch char {
-				case '0': zeros[i]++
-				case '1': ones[i]++
+				case '0':
+					zeros[i]++
+					digits = append(digits, 0)
+				case '1':
+					ones[i]++
+					digits = append(digits, 1)
 			}
 		}
 
-		// https://golangcookbook.com/chapters/strings/processing/
+		number_list = append(number_list, digits)
+
 		log.Printf("Line: %s, Zeroes: %v, Ones: %v", line, zeros, ones);
+		log.Printf(" - Digits List: %v", digits);
 	}
+
+	switch (calculation) {
+		case "power_consumption": day_03_power_consumption(zeros, ones)
+		//case "life_support": day_03_life_support(number_list, zeros, ones)
+		default: log.Fatalf("%s calculation not yet implemented")
+	}
+
+}
+func day_03_power_consumption(zeros , ones []int ){
+
+	gamma := ""
+	epsilon := ""
 
 	// Now Build Gamma and Epsilon by getting most and least common bit in each position
 	for i := 0; i < len(zeros); i++ {
@@ -92,10 +111,27 @@ func day_03() {
 		}
 	}
 
+	gamma_decimal, err := strconv.ParseUint( gamma, 2, 32)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	epsilon_decimal, err := strconv.ParseUint( epsilon, 2, 32)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	multiplied := gamma_decimal * epsilon_decimal
+
 	// Output information and multiplied value
 	log.Print("-----------------------------------")
 	log.Printf("Gamma Binary: %s", gamma)
 	log.Printf("Epsilon Binary: %s", epsilon)
+	log.Print("-----------------------------------")
+	log.Printf("Gamma Decimal: %d", gamma_decimal)
+	log.Printf("Epsilon Decimal: %d", epsilon_decimal)
+	log.Print("-----------------------------------")
+	log.Printf("Multiplied: %d", multiplied)
 }
 
 /**
