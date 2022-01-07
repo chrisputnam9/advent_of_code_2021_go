@@ -17,7 +17,7 @@ import (
 const defaultFilename = "input.txt"
 
 // Default day to run
-var day = "day_03"
+var day = "day_03_part2"
 
 func main() {
 	day = get_day()
@@ -85,9 +85,12 @@ func day_03(calculation string) {
 
 	switch (calculation) {
 		case "power_consumption": day_03_power_consumption(zeros, ones)
-		//case "life_support": day_03_life_support(number_list, zeros, ones)
-		default: log.Fatalf("%s calculation not yet implemented")
+		case "life_support": day_03_life_support(number_list, zeros, ones)
+		default: log.Fatalf("%s calculation not yet implemented", calculation)
 	}
+
+}
+func day_03_life_support(number_list [][]int, zeros, ones []int ) {
 
 }
 func day_03_power_consumption(zeros , ones []int ){
