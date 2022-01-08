@@ -92,6 +92,44 @@ func day_03(calculation string) {
 }
 func day_03_life_support(number_list [][]int, zeros, ones []int ) {
 
+	oxygen := make([][]int, 0)
+	copy(oxygen, number_list)
+	co2 := make([][]int, 0);
+	copy(co2, number_list)
+
+	// Loop through each position
+	for i := 0; i < len(zeros); i++ {
+
+		// TODO - need to re-count zeros and ones every time - numbers have been filtered out
+		count_zeros := zeros[i]
+		count_ones := ones[i]
+
+		oxygen_bit_keep := 1
+		co2_bit_keep := 0
+
+		// Check for most common bit
+		if ( count_zeros > count_ones ) {
+			oxygen_bit_keep = 0
+			co2_bit_keep = 1
+		} // otherwise, stick with default 1/0
+
+		oxygen = day_03_life_support_filter(oxygen, i, oxygen_bit_keep)
+		co2 = day_03_life_support_filter(co2, i, co2_bit_keep)
+
+	}
+
+}
+func day_03_life_support_filter(number_list [][]int, position, bit_to_keep int) [][]int {
+	filtered := make([][]int, 0)
+
+	for _, number := range number_list {
+		digit := number[position]
+		if digit == bit_to_keep {
+			filtered = append(filtered, number)
+		}
+	}
+
+	return filtered
 }
 func day_03_power_consumption(zeros , ones []int ){
 
