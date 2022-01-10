@@ -49,8 +49,6 @@ func day_03(calculation string) {
 	}
 
 	number_list := make([][]int, 0)
-	zeros := make([]int, 0)
-	ones := make([]int, 0)
 
 	// Loop over input, counting 0s and 1s in each position
 	//  - and adding lines to a slice for future reference
@@ -59,48 +57,39 @@ func day_03(calculation string) {
 
 		digits := make([]int, 0)
 
-		for i, char := range line {
-
-			// Expand our slices if needed
-			if ( len(ones) < (i + 1) ) {
-				zeros = append(zeros, 0)
-				ones = append(ones, 0)
-			}
-
+		for _, char := range line {
 			switch char {
 				case '0':
-					zeros[i]++
 					digits = append(digits, 0)
 				case '1':
-					ones[i]++
 					digits = append(digits, 1)
 			}
 		}
 
 		number_list = append(number_list, digits)
-
-		log.Printf("Line: %s, Zeroes: %v, Ones: %v", line, zeros, ones);
-		log.Printf(" - Digits List: %v", digits);
 	}
 
 	switch (calculation) {
-		case "power_consumption": day_03_power_consumption(zeros, ones)
-		case "life_support": day_03_life_support(number_list, zeros, ones)
+		case "power_consumption": day_03_power_consumption(number_list)
+		case "life_support": day_03_life_support(number_list)
 		default: log.Fatalf("%s calculation not yet implemented", calculation)
 	}
 
 }
-func day_03_life_support(number_list [][]int, zeros, ones []int ) {
+func day_03_life_support(number_list [][]int) {
 
-	oxygen := make([][]int, 0)
-	copy(oxygen, number_list)
-	co2 := make([][]int, 0);
-	copy(co2, number_list)
+	oxygen_list := make([][]int, 0)
+	copy(oxygen_list, number_list)
+	co2_list := make([][]int, 0);
+	copy(co2_list, number_list)
+
+	oxygen:= ""
+	co2 := ""
 
 	// Loop through each position
-	for i := 0; i < len(zeros); i++ {
+	for i := 0; i < len(number_list[0]); i++ {
 
-		// TODO - need to re-count zeros and ones every time - numbers have been filtered out
+		zeros, ones := day_03_count_bits(number_list)
 		count_zeros := zeros[i]
 		count_ones := ones[i]
 
@@ -113,12 +102,52 @@ func day_03_life_support(number_list [][]int, zeros, ones []int ) {
 			co2_bit_keep = 1
 		} // otherwise, stick with default 1/0
 
-		oxygen = day_03_life_support_filter(oxygen, i, oxygen_bit_keep)
-		co2 = day_03_life_support_filter(co2, i, co2_bit_keep)
+		// TODO
+		// We could improve this by stopping once we have only one
+		oxygen_list = day_03_life_support_filter(oxygen_list, i, oxygen_bit_keep)
+		co2_list = day_03_life_support_filter(co2_list, i, co2_bit_keep)
 
 	}
 
+	// Finalize
+	// TODO
+
 }
+
+/**
+ * Count the bits at each position and return total
+ * @return zeros, ones
+ */
+func day_03_count_bits(number_list [][]int) ([]int, []int) {
+	zeros := make([]int, 0)
+	ones := make([]int, 0)
+
+	for _, digit_list := range number_list {
+		for i, digit := range digit_list {
+
+			// Expand our slices if needed
+			if ( len(ones) < (i + 1) ) {
+				zeros = append(zeros, 0)
+				ones = append(ones, 0)
+			}
+
+			switch digit {
+				case 0:
+					zeros[i]++
+				case 1:
+					ones[i]++
+			}
+
+			log.Printf("Digits: %v, Zeroes: %v, Ones: %v", digit_list, zeros, ones);
+		}
+	}
+
+	return zeros, ones
+}
+/**
+ * Filter number list based on a given position and what bit signals to keep that number
+ * - eg. for position 1, bit 0 - keep all numbers with a 0 in position 1
+ */
 func day_03_life_support_filter(number_list [][]int, position, bit_to_keep int) [][]int {
 	filtered := make([][]int, 0)
 
@@ -131,7 +160,12 @@ func day_03_life_support_filter(number_list [][]int, position, bit_to_keep int) 
 
 	return filtered
 }
-func day_03_power_consumption(zeros , ones []int ){
+/**
+ * Day 3 part 2 - calculate power consumption
+ */
+func day_03_power_consumption(number_list [][]int){
+
+	zeros, ones := day_03_count_bits(number_list)
 
 	gamma := ""
 	epsilon := ""
